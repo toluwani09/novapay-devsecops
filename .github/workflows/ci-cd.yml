@@ -44,3 +44,7 @@ jobs:
       - name: Dependency vulnerability scan
         run: |
           pip-audit -r app/requirements.txt
+
+      - name: Build container image
+        run: |
+          docker build -t novapay-wallet:${{ github.sha }} .
