@@ -61,4 +61,5 @@ jobs:
           ignore-unfixed: true
         
       - name: Secret scan
+        if: always()
         uses: gitleaks/gitleaks-action@v2
