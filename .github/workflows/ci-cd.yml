@@ -59,9 +59,12 @@ jobs:
           exit-code: '1'
           severity: 'CRITICAL'
           ignore-unfixed: true
-        
+    
       - name: Secret scan
         if: always()
-        uses: docker://zricethezav/gitleaks:v8.24.3
-        with:
-          args: detect --source=/github/workspace --log-opts="--all" --redact --verbose
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_COMMENTS: false
+          GITLEAKS_ENABLE_SUMMARY: true
+          GITLEAKS_NOTIFY_USER_LIST: false
+          GITLEAKS_LOG_OPTS: "--all"
