@@ -48,3 +48,12 @@ jobs:
       - name: Build container image
         run: |
           docker build -t novapay-wallet:${{ github.sha }} .
+          
+      - name: Scan container image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'novapay-wallet:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL'
+          ignore-unfixed: true
