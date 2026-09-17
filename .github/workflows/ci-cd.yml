@@ -65,3 +65,42 @@ jobs:
           curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz -o gitleaks.tar.gz
           tar -xzf gitleaks.tar.gz gitleaks
           ./gitleaks detect --source . --log-opts="--all" --redact --verbose
+
+          //This sctage configure SSH and deploy the container image to the staging server
+      - name: Configure SSH
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/novapay_key
+          chmod 600 ~/.ssh/novapay_key
+          ssh-keyscan -H "${{ secrets.STAGING_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Package container image for staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker save novapay-wallet:${{ github.sha }} | gzip > novapay-wallet.tar.gz
+
+      - name: Copy container image to staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          scp -i ~/.ssh/novapay_key novapay-wallet.tar.gz ec2-user@${{ secrets.STAGING_HOST }}:/tmp/novapay-wallet.tar.gz
+
+      - name: Deploy staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          ssh -i ~/.ssh/novapay_key ec2-user@${{ secrets.STAGING_HOST }} << 'EOF'
+            gunzip -c /tmp/novapay-wallet.tar.gz | docker load
+            docker rm -f novapay-wallet 2>/dev/null || true
+            docker run -d \
+              --name novapay-wallet \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              novapay-wallet:${{ github.sha }}
+            rm -f /tmp/novapay-wallet.tar.gz
+          EOF
+
+      - name: Verify staging deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          sleep 5
+          curl --fail "http://${{ secrets.STAGING_HOST }}:8000/health"

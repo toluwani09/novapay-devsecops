@@ -9,3 +9,6 @@ __pycache__/
 *.tfstate
 *.tfstate.*
 crash.log
+
+novapay-staging-key
+novapay-staging-key.pub

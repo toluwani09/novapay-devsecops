@@ -18,11 +18,25 @@ resource "aws_vpc_security_group_ingress_rule" "application" {
   description       = "NovaPay application access"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ssh" {
+  security_group_id = aws_security_group.compute.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 22
+  to_port           = 22
+  ip_protocol       = "tcp"
+  description       = "SSH access for staging deployment"
+}
+
 resource "aws_vpc_security_group_egress_rule" "compute_egress" {
   security_group_id = aws_security_group.compute.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
   description       = "NovaPay compute outbound access"
+}
+
+resource "aws_key_pair" "novapay" {
+  key_name   = "${var.project_name}-${var.environment}-key"
+  public_key = file("${path.module}/../novapay-staging-key.pub")
 }
 
 resource "aws_instance" "novapay" {
@@ -32,12 +46,14 @@ resource "aws_instance" "novapay" {
   vpc_security_group_ids = [aws_security_group.compute.id]
 
   iam_instance_profile = aws_iam_instance_profile.novapay.name
+  key_name             = aws_key_pair.novapay.key_name
 
   user_data = <<-EOF
               #!/bin/bash
               dnf install -y docker
               systemctl enable docker
               systemctl start docker
+              usermod -aG docker ec2-user
               EOF
 
   tags = {
