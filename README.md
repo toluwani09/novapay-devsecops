@@ -719,6 +719,16 @@ The evidence includes:
 
 The screenshots supplement the reproducible source code, Terraform configuration, pipeline definition, and security documentation contained in the repository.
 
+## Data Residency
+
+NovaPay is designed as a fintech wallet service that may process sensitive customer and financial information. In a production environment, data residency requirements would be established based on the applicable regulatory and organizational requirements before selecting the deployment region.
+
+Data classified as requiring in-country residency, including applicable customer information, wallet records, transaction data, database backups, and application secrets, would be stored and processed only within approved geographic boundaries.
+
+Residency would be enforced by restricting production infrastructure and managed data services to approved AWS Regions, applying IAM controls to prevent unauthorized use of non-approved Regions, and ensuring that database backups, snapshots, secrets, and other persistent data are not replicated outside the approved boundary.
+
+The current NovaPay environment is a staging implementation deployed in AWS `us-east-1` for this take-home exercise. It contains demonstration wallet data and should not be interpreted as the production residency architecture for Nigerian customer or financial data.
+
 ---
 
 ## 18. Assumptions and Limitations
