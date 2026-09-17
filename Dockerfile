@@ -13,6 +13,11 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
+# Apply available security updates to the runtime image
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /install /usr/local
 COPY app/main.py .
 

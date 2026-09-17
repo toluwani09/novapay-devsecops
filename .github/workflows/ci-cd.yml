@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint-and-test:
-    name: Lint and Unit Test
+    name: NovaPay Security Pipeline
     runs-on: ubuntu-latest
 
     steps:
@@ -38,11 +38,11 @@ jobs:
         working-directory: app
         run: |
           python -m pytest -v
-        
+
       - name: SAST
         run: |
           bandit -r app/ -x app/test_main.py
-         
+
       - name: Dependency vulnerability scan
         run: |
           pip-audit -r app/requirements.txt
@@ -50,7 +50,7 @@ jobs:
       - name: Build container image
         run: |
           docker build -t novapay-wallet:${{ github.sha }} .
-          
+
       - name: Scan container image
         uses: aquasecurity/trivy-action@master
         with:
@@ -58,7 +58,6 @@ jobs:
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL'
-          ignore-unfixed: true
 
       - name: Secret scan
         if: always()

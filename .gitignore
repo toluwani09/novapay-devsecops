@@ -1,4 +1,11 @@
 __pycache__/
 .pytest_cache/
+.ruff_cache/
 *.pyc
 .env
+
+# Terraform generated/local files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
