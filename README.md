@@ -41,7 +41,7 @@ The staging environment is deployed to AWS using Terraform.
 
 ![NovaPay Architectural Diagram](Images/NovaPay%20Architectural%20Diagram.jpeg)
 
-```
+``
 
 ### Network Boundaries
 
