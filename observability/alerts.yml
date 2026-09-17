@@ -1,0 +1,14 @@
+groups:
+  - name: novapay-alerts
+    rules:
+      - alert: NovaPayHighErrorRate
+        expr: |
+          rate(novapay_wallet_errors_total[5m])
+          /
+          rate(novapay_wallet_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "NovaPay wallet error rate is above 5%"
+          description: "More than 5% of NovaPay wallet requests have failed during the evaluation window."
