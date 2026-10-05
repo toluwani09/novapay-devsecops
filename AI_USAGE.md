@@ -35,10 +35,8 @@ The generated Dockerfile used `python:3.13-slim` for both the build and runtime 
 
 I built and ran the container and independently verified the runtime identity using:
 
-```bash
 docker exec novapay id
 docker exec novapay whoami
-```
 
 The result showed UID 1000 and `appuser`, confirming that the application was running as a non-root user.
 
@@ -114,9 +112,7 @@ The RDS security group restricted PostgreSQL port 5432 to the NovaPay compute se
 
 The EC2 IAM policy was restricted to:
 
-```text
 secretsmanager:GetSecretValue
-```
 
 against the ARN of the specific NovaPay application secret rather than using a wildcard resource.
 

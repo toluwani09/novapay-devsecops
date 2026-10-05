@@ -6,8 +6,6 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
 
 app = FastAPI()
 
-
-# Structured JSON logging
 logger = logging.getLogger("novapay")
 logger.setLevel(logging.INFO)
 
@@ -22,14 +20,17 @@ def log_event(level, event, **details):
         "event": event,
         **details
     }
-
     logger.info(json.dumps(log_entry))
 
 
-# Custom Prometheus metric
 wallet_requests = Counter(
     "novapay_wallet_requests_total",
     "Total number of requests to the NovaPay wallet endpoint"
+)
+
+wallet_errors = Counter(
+    "novapay_wallet_errors_total",
+    "Total number of errors from the NovaPay wallet endpoint"
 )
 
 
@@ -52,16 +53,28 @@ def version():
 def get_wallet(wallet_id: str):
     wallet_requests.inc()
 
-    log_event(
-        "INFO",
-        "wallet_retrieved",
-        wallet_id=wallet_id
-    )
+    try:
+        log_event(
+            "INFO",
+            "wallet_retrieved",
+            wallet_id=wallet_id
+        )
 
-    return {
-        "id": wallet_id,
-        "balance_kobo": 500000
-    }
+        return {
+            "id": wallet_id,
+            "balance_kobo": 500000
+        }
+
+    except Exception:
+        wallet_errors.inc()
+
+        log_event(
+            "ERROR",
+            "wallet_retrieval_failed",
+            wallet_id=wallet_id
+        )
+
+        raise
 
 
 @app.get("/metrics")

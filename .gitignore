@@ -11,4 +11,4 @@ __pycache__/
 crash.log
 
 novapay-staging-key
-novapay-staging-key.pub
+novapay-staging-key.pub*.tfplan
