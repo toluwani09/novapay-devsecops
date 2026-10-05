@@ -9,6 +9,9 @@ NovaPay is a minimal wallet microservice used to demonstrate a secure, observabl
 
 The focus of this implementation is the engineering around the service: secure containerization, security-gated CI/CD, Infrastructure as Code, secrets handling, least-privilege IAM, observability, threat modelling, incident response and deployment to a real AWS staging environment.
 
+# Disclaimer: 
+This repository is an independent educational and portfolio project. “NovaPay” is used solely as the name of a fictional fintech application within this project. Any similarity to existing banks, financial institutions, payment services, companies, products, or trademarks bearing the same or similar name is coincidental. This project is not affiliated with, endorsed by, sponsored by, or connected to any such organization. All infrastructure, application data, wallet records, credentials, and transaction examples used in this repository are synthetic or demonstration data only.
+
 ---
 
 ## 1. Application
